@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+    <div class="container">
+        <p>
+            {{ flatpage.content }}
+        </p>
+    </div>
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ flatpage.title }}
+{% endblock %}
+
+{% block flatpages %}
+{% endblock %}

@@ -1,10 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block stylesheet %}
+    {{ block.super }}
+  <link rel="stylesheet" href="{% static 'css/accounts.css' %}">
+{% endblock %}
+
+{% block body %}
+  <div class="container">
+    <h1 class="text-center logo my-4">
+      <a href="{% url 'home' %}">Django Boards</a>
+    </h1>
+    {% block content %}
+    {% endblock %}
+  </div>
+{% endblock %}
+
+{% block flatpages %}{% endblock %}

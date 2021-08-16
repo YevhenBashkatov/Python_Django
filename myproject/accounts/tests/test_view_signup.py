@@ -1,9 +1,10 @@
 from django.test import TestCase
 from django.urls import reverse, resolve
 from ..views import signup
-from django.contrib.auth.forms import UserCreationForm
+
 from django.contrib.auth.models import User
 from ..forms import SignUpForm
+
 
 # Create your tests here.
 
@@ -32,10 +33,11 @@ class SignUpTests(TestCase):
         self.assertContains(self.response, 'type="email"', 1)
         self.assertContains(self.response, 'type="password"', 2)
 
+
 class SuccessfulSignUpTests(TestCase):
     def setUp(self):
         url = reverse('signup')
-        data = {'username': 'john2',
+        data = {'username': 'john4',
                 'email': 'john@doe.com',
                 'password1': 'asdfas123456',
                 'password2': 'asdfas123456'}
@@ -52,6 +54,7 @@ class SuccessfulSignUpTests(TestCase):
         response = self.client.get(self.home_url)
         user = response.context.get('user')
         self.assertTrue(user.is_authenticated)
+
 
 class InvalidSignUpTests(TestCase):
     def setUp(self):

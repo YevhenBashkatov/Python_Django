@@ -1,39 +1,63 @@
+{% extends 'base.html' %}
+
 {% load static %}
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>Boards</title>
-    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
-  </head>
-  <body>
-    <div class="container">
-      <ol class="breadcrumb my-4">
-        <li class="breadcrumb-item active">Boards</li>
-      </ol>
-      <table class="table">
-        <thead class="thead-inverse">
-          <tr>
-            <th>Board</th>
-            <th>Posts</th>
-            <th>Topics</th>
-            <th>Last Post</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for board in boards %}
-            <tr>
-              <td>
-                {{ board.name }}
-                <small class="text-muted d-block">{{ board.description }}</small>
-              </td>
-              <td class="align-middle">0</td>
-              <td class="align-middle">0</td>
-              <td></td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+
+{% block javascript %}
+  <script src="{% static 'js/boards.js' %}"></script>
+{% endblock %}
+
+
+{% block breadcrumb %}
+  <li class="breadcrumb-item active">Boards</li>
+{% endblock %}
+
+{% block content %}
+    <div>
+    {% if user.is_blogger %}
+       <p>
+    <button type="button" class="btn btn-primary js-create-board" data-url="{% url 'board_create' %}">
+      <span class="glyphicon glyphicon-plus"></span>
+      New board
+    </button>
+  </p>
+
+
+    {% endif %}
+
+
     </div>
-  </body>
-</html>
+    {% include 'partials/messages.html' %}
+    <div style="" id="message-div">
+    {% if messages %}
+  <ul class="messages">
+{#    {% for message in messages %}#}
+{#      <li class="{{ message.tags }}">{{ message }}</li>#}
+{#    {% endfor %}#}
+  </ul>
+{% endif %}
+        </div>
+<table class="table" id="board-table">
+    <thead class="thead-dark">
+      <tr>
+        <th>#</th>
+        <th>Board</th>
+        <th>Description</th>
+        <th></th>
+      </tr>
+    </thead>
+        <tbody>
+            {% include 'partials/partial_board_list.html' %}
+        </tbody>
+</table>
+
+{% include 'includes/pagination.html' %}
+
+<div class="modal fade" id="modal-board">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

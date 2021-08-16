@@ -1,10 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% load static %}
+{#{% block stylesheet %}#}
+{#    <link rel="stylesheet" href="{% static 'css/accounts.css' %}">#}
+{#{% endblock %}#}
+
+
+
+
+
+{% block content %}
+  <h2>Sign up for a free account</h2>
+  <p class="lead">Select below the type of account you want to create</p>
+  <a href="{% url 'blogger_signup' %}" class="btn btn-student btn-lg" role="button">I'm a blogger</a>
+  <a href="{% url 'reader_signup' %}" class="btn btn-teacher btn-lg" role="button">I'm a reader</a>
+{% endblock %}
+
+
+

@@ -1,0 +1,16 @@
+.footer_style{
+    justify-content: flex-end;
+    width: 100vw;
+    position: fixed;
+    bottom: 0;
+    display: flex;
+    padding: 16px ;
+    height: auto;
+    margin-top:auto;
+    background-color:#343a40;
+}
+
+.li {
+    list-style-type: none;
+    margin-bottom:1rem;
+   }
