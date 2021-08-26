@@ -5,6 +5,7 @@
 {% block title %}Post a reply{% endblock %}
 
 {% block stylesheet %}
+    {{ block.super }}
   <link rel="stylesheet" href="{% static 'css/simplemde.min.css' %}">
 {% endblock %}
 
@@ -47,3 +48,7 @@
   {% endfor %}
 
 {% endblock %}
+
+{% block flatpages %}{% endblock %}
+
+{% block javascript %}{% endblock %}

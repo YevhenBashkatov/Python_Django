@@ -22,6 +22,11 @@ from boards import views
 
 from django.urls import reverse_lazy
 
+from boards import utils
+
+from django.conf import settings
+from django.conf.urls.static import static
+
 urlpatterns = [
     path('', views.BoardListView.as_view(), name='home'),
     path('signup/', accounts_views.signup, name='signup'),
@@ -58,12 +63,21 @@ urlpatterns = [
     path('boards/<int:pk>/delete', views.board_delete, name='board_delete'),
 
     path('boards/<int:pk>', views.TopicListView.as_view(), name='board_topics'),
+
     path('boards/<int:pk>/new/', views.new_topic, name='new_topic'),
+    path('boards/<int:pk>/new/basic-upload', views.BasicUploadView.as_view(), name='basic_upload'),
+    path('boards/<int:pk>/to_pdf/', utils.to_pdf, name='to_pdf'),
+    path('boards/<int:pk>/export_topics_csv/', utils.export_topics_csv, name='export_topics_csv'),
+    path('email_send/', utils.test_send, name='test_send'),
     path('boards/<int:pk>/topics/<int:topic_pk>', views.PostListView.as_view(), name='topic_posts'),
     path('boards/<int:pk>/topics/<int:topic_pk>/reply', views.reply_topic, name='reply_topic'),
     path('boards/<int:pk>/topics/<int:topic_pk>/post/<int:post_pk>/edit', views.PostUpdateView.as_view(),
          name='edit_post'),
+
     path('pages/', include('django.contrib.flatpages.urls')),
     path('admin/', admin.site.urls),
 
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

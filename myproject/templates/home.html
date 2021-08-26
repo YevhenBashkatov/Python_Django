@@ -36,6 +36,7 @@
   </ul>
 {% endif %}
         </div>
+    <div>
 <table class="table" id="board-table">
     <thead class="thead-dark">
       <tr>
@@ -49,8 +50,11 @@
             {% include 'partials/partial_board_list.html' %}
         </tbody>
 </table>
+        <div class="float-right" style="right: 50px; bottom: 50%; position: absolute">
+                    {% include 'partials/partial_recent_actions.html' %}
+               </div>
 
-{% include 'includes/pagination.html' %}
+
 
 <div class="modal fade" id="modal-board">
     <div class="modal-dialog">
@@ -60,4 +64,17 @@
     </div>
 </div>
 
+
+
+
+
+    {% include 'includes/pagination.html' %}
+
+
+
 {% endblock %}
+
+{% block flatpages %}{{ block.super }}{% endblock %}
+
+{#{% include 'partials/partial_recent_actions.html' %}#}
+

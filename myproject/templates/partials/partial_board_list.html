@@ -2,7 +2,7 @@
 {% for board in boards %}
   <tr>
     <td>{{ board.id }}</td>
-    <td>{{ board.name }}</td>
+    <td><a href="{% url 'board_topics' board.pk %}">{{ board.name }}</a> </td>
     <td>{{ board.description }}</td>
     <td>
       <button type="button"

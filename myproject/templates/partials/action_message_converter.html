@@ -1,0 +1,12 @@
+{% if h.history_type == '+' %}
+    <p class="">
+        <span class="glyphicon glyphicon-pencil">
+            {{ h.name }} created
+        </span>
+    </p>
+{% elif h.history_type == '-'%}
+    <p class=""><span class="glyphicon glyphicon-pencil"></span>{{ h.name }} deleted</p>
+{% elif h.history_type == '~' %}
+    <p class="">{{ h.name }} updated</p>
+
+{% endif %}

@@ -5,6 +5,8 @@
 {% block stylesheet %}
        {{ block.super }}
   <link rel="stylesheet" href="{% static 'css/accounts.css' %}">
+    <script src='https://www.google.com/recaptcha/api.js'></script>
+
 {% endblock %}
 
 {% block body %}
@@ -21,7 +23,14 @@
               {% csrf_token %}
               <input type="hidden" name="next" value="{{ next }}">
               {% include 'includes/form.html' %}
+{#                <button type="submit" class="g-recaptcha"#}
+{#        data-sitekey="6LfvjwscAAAAAE5fAOF22M0vAItM8OIX6zz23kEL"#}
+{#        data-callback='onSubmit'#}
+{#        data-action='submit' href="{% url 'my_account' %}">Submit</button>#}
               <button type="submit" class="btn btn-primary btn-block" href="{% url 'my_account' %}">Log in</button>
+
+    <div class="g-recaptcha mt-1 align-items-center" data-sitekey="6LerCQwcAAAAAPz-GepCjRHTLh-cX2MIVQPiZ_v3
+"></div>
                 <div class="text-center py-2">
                     ---- OR ----
                 </div>
@@ -32,8 +41,9 @@
           </div>
           <div class="card-footer text-muted text-center">
             New to Django Boards? <a href="{% url 'signup' %}">Sign up</a>
-
           </div>
+
+
         </div>
         <div class="text-center py-2">
           <small>

@@ -4,6 +4,8 @@
 
 {% block stylesheet %}
    {{ block.super }}
+    <script src='https://www.google.com/recaptcha/api.js'></script>
+
   <link rel="stylesheet" href="{% static 'css/signup.css' %}">
 {% endblock %}
 
@@ -21,6 +23,8 @@
               {% csrf_token %}
               {% include 'includes/form.html' %}
               <button type="submit" class="btn btn-primary btn-block">Create an account</button>
+    <div class="g-recaptcha" data-sitekey="6LerCQwcAAAAAPz-GepCjRHTLh-cX2MIVQPiZ_v3
+"></div>
             </form>
           </div>
           <div class="card-footer text-muted text-center">

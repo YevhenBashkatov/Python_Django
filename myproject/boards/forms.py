@@ -1,6 +1,5 @@
 from django import forms
-from .models import Board, Topic, Post, Interests, Categories, User, Blogger, Reader
-
+from .models import Board, Topic, Post, Interests, Categories, User, Blogger, Reader, Photo
 from django.contrib.auth.forms import UserCreationForm
 
 from django.db import transaction
@@ -8,6 +7,7 @@ from django.shortcuts import redirect
 
 
 class NewTopicForm(forms.ModelForm):
+    photo = forms.IntegerField(required=False, widget=forms.HiddenInput, label="")
     message = forms.CharField(widget=forms.Textarea(
         attrs={'rows': 5, 'placeholder': 'What is on your mind?'}
     ),
@@ -16,7 +16,15 @@ class NewTopicForm(forms.ModelForm):
 
     class Meta:
         model = Topic
-        fields = ['subject', 'message']
+        fields = ['subject', 'message', 'photo']
+
+
+
+
+class PhotoForm(forms.ModelForm):
+    class Meta:
+        model = Photo
+        fields = ('file',)
 
 
 class PostForm(forms.ModelForm):
@@ -36,23 +44,24 @@ class BloggerSignUpForm(UserCreationForm):
 
     class Meta(UserCreationForm.Meta):
         model = User
-        fields = ("username", "birthday", "city", 'country', 'categories')
+        fields = ("username", 'password1', 'password2', 'email', "birthday", "city", 'country', 'categories')
 
     @transaction.atomic
     def save(self, commit=True):
         user = super().save(commit=False)
         user.is_blogger = True
-        print('USER TYPE _____________', user.is_blogger)
+        user.email = self.cleaned_data.get('email')
+        print('USER Email _____________', user.email)
         user.save()
         print('USER SAVE _____________', user.is_blogger)
 
         blogger = Blogger.objects.create(user=user)
         print('Blogger CREATED _____________', user.is_blogger)
 
-        # blogger.birthday = self.cleaned_data.get('birthday')
-        # blogger.city = self.cleaned_data.get('city')
-        # blogger.country = self.cleaned_data.get('country')
-        # blogger.categories = self.cleaned_data.get('categories')
+        blogger.birthday = self.cleaned_data.get('birthday')
+        blogger.city = self.cleaned_data.get('city')
+        blogger.country = self.cleaned_data.get('country')
+        blogger.categories.add(*self.cleaned_data.get('categories'))
         blogger.save()
         print('Blogger SAVED _____________', user.is_blogger)
 
@@ -68,16 +77,17 @@ class ReaderSignUpForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = User
 
+        fields = ("username", 'interests')
+
     @transaction.atomic
     def save(self):
         user = super().save(commit=False)
         user.is_reader = True
         user.save()
         reader = Reader.objects.create(user=user)
-        reader.birthday.add(*self.cleaned_data.get('birthday'))
-        reader.city.add(*self.cleaned_data.get('city'))
-        reader.country.add(*self.cleaned_data.get('country'))
-        reader.categories.add(*self.cleaned_data.get('categories'))
+        reader.is_adult = self.cleaned_data.get('is_adult')
+        reader.interests.add(*self.cleaned_data.get('interests'))
+        reader.save()
 
         return user
 
@@ -86,5 +96,3 @@ class BoardForm(forms.ModelForm):
     class Meta:
         model = Board
         fields = ('name', 'description')
-
-

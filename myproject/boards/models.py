@@ -8,8 +8,9 @@ from django.utils.text import Truncator
 from django.contrib.auth.models import AbstractUser
 from markdown import markdown
 
-
 # Create your models here.
+from simple_history.models import HistoricalRecords
+
 
 class User(AbstractUser):
     is_blogger = models.BooleanField(default=False)
@@ -17,7 +18,6 @@ class User(AbstractUser):
 
     def __get__(self, instance, owner):
         return self.username
-
 
 
 class Categories(models.Model):
@@ -43,7 +43,7 @@ class Reader(models.Model):
 class Blogger(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     birthday = models.DateField(null=True, blank=True)
-    country = models.CharField(null=True,max_length=30)
+    country = models.CharField(null=True, max_length=30)
     city = models.CharField(null=True, max_length=30)
     categories = models.ManyToManyField(Categories, related_name='categories_reader')
 
@@ -51,6 +51,15 @@ class Blogger(models.Model):
 class Board(models.Model):
     name = models.CharField(max_length=30, unique=True)
     description = models.CharField(max_length=100)
+    history = HistoricalRecords()
+
+    @property
+    def _history_user(self):
+        return self.changed_by
+
+    @_history_user.setter
+    def _history_user(self, value):
+        self.changed_by = value
 
     def __str__(self):
         return self.name
@@ -92,3 +101,10 @@ class Post(models.Model):
 
     def get_message_as_markdown(self):
         return mark_safe(markdown(self.message, safe_mode='escape'))
+
+
+class Photo(models.Model):
+    topic = models.ForeignKey(Topic, related_name='photos', on_delete=models.CASCADE, null=True)
+    title = models.CharField(max_length=255, blank=True)
+    file = models.ImageField(upload_to='photos/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)

@@ -46,6 +46,7 @@ INSTALLED_APPS = [
 
     'widget_tweaks',
     'social_django',
+    'simple_history',
 
     'accounts',
     'boards',
@@ -60,6 +61,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'simple_history.middleware.HistoryRequestMiddleware',
 
     'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
@@ -172,3 +175,22 @@ SOCIAL_AUTH_GITHUB_SECRET = 'ebc36d560d13a0bcb8ce0ed1dbfcf317fd06692a'
 
 SOCIAL_AUTH_FACEBOOK_KEY = '526536401909720'  # App ID
 SOCIAL_AUTH_FACEBOOK_SECRET = 'd6dc73e40b7d01c203770f7640b31b04'
+
+GOOGLE_RECAPTCHA_SECRET_KEY = '6LerCQwcAAAAALVS0VNJXoKuJXOiOsVAXoR7DUWk'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'djangotestcomp@gmail.com'
+EMAIL_HOST_PASSWORD = 'ipkyciudrjjriqnk'
+
+BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Europe/Moscow'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
