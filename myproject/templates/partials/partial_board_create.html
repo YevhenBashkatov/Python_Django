@@ -1,8 +1,9 @@
-<form method="post" action="{% url 'board_create' %}" class="js-board-create-form">
+<form method="post" action="{% url 'board_create' page%}" class="js-board-create-form">
   {% csrf_token %}
   <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-      <span aria-hidden="true">&times;</span>
+
+    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true" class="btn-close">&times;</span>
     </button>
     <h4 class="modal-title">Create a new board</h4>
   </div>
@@ -10,7 +11,7 @@
     {% include 'partials/partial_board_form.html' %}
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
     <button type="submit" class="btn btn-primary">Create board</button>
   </div>
 </form>

@@ -5,16 +5,18 @@
     <td><a href="{% url 'board_topics' board.pk %}">{{ board.name }}</a> </td>
     <td>{{ board.description }}</td>
     <td>
+        {% if user.is_blogger == True %}
       <button type="button"
               class="btn btn-warning btn-sm js-update-board"
-              data-url="{% url 'board_update' board.id %}">
+              data-url="{% url 'board_update' board.id page%}">
         <span class="glyphicon glyphicon-pencil"></span> Edit
       </button>
         <button type="button"
               class="btn btn-danger btn-sm js-delete-board"
-              data-url="{% url 'board_delete' board.id %}">
+              data-url="{% url 'board_delete' board.id page%}">
         <span class="glyphicon glyphicon-trash"></span> Delete
       </button>
+        {% endif %}
     </td>
   </tr>
 
@@ -23,6 +25,7 @@
     <td colspan="5" class="text-center bg-warning">No boards</td>
   </tr>
 {% endfor %}
+{#{% include 'includes/pagination.html' %}#}
 
 
 

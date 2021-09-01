@@ -19,12 +19,12 @@ class NewTopicForm(forms.ModelForm):
         fields = ['subject', 'message', 'photo']
 
 
-
-
 class PhotoForm(forms.ModelForm):
+    photo = forms.FileField(widget=forms.FileInput)
+
     class Meta:
         model = Photo
-        fields = ('file',)
+        fields = ('photo',)
 
 
 class PostForm(forms.ModelForm):
@@ -39,12 +39,13 @@ class BloggerSignUpForm(UserCreationForm):
     country = forms.CharField(required=True)
 
     categories = forms.ModelMultipleChoiceField(queryset=Categories.objects.all(),
-                                                widget=forms.CheckboxSelectMultiple,
-                                                required=True)
+                                           widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
+                                           required=True,
+                                                )
 
     class Meta(UserCreationForm.Meta):
         model = User
-        fields = ("username", 'password1', 'password2', 'email', "birthday", "city", 'country', 'categories')
+        fields = ("username", 'password1', 'password2', 'email', "birthday", "country", 'city', 'categories')
 
     @transaction.atomic
     def save(self, commit=True):

@@ -15,6 +15,7 @@ from simple_history.models import HistoricalRecords
 class User(AbstractUser):
     is_blogger = models.BooleanField(default=False)
     is_reader = models.BooleanField(default=False)
+    avatar = models.ForeignKey('accounts.Avatar', null=True, blank=True, on_delete=models.SET_NULL)
 
     def __get__(self, instance, owner):
         return self.username
@@ -52,6 +53,7 @@ class Board(models.Model):
     name = models.CharField(max_length=30, unique=True)
     description = models.CharField(max_length=100)
     history = HistoricalRecords()
+    is_active = models.BooleanField(default=True)
 
     @property
     def _history_user(self):
@@ -105,6 +107,5 @@ class Post(models.Model):
 
 class Photo(models.Model):
     topic = models.ForeignKey(Topic, related_name='photos', on_delete=models.CASCADE, null=True)
-    title = models.CharField(max_length=255, blank=True)
-    file = models.ImageField(upload_to='photos/')
+    photo = models.ImageField(upload_to='photos/')
     uploaded_at = models.DateTimeField(auto_now_add=True)

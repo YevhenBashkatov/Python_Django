@@ -28,11 +28,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('', views.BoardListView.as_view(), name='home'),
+    path('', views.home, name='home'),
     path('signup/', accounts_views.signup, name='signup'),
     path('signup/blogger', views.BloggerSignUpView.as_view(), name='blogger_signup'),
     path('signup/reader', views.ReaderSignUpView.as_view(), name='reader_signup', ),
-    path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
+    path('login/', accounts_views.LoginViewCustom.as_view(), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('oauth/', include('social_django.urls', namespace='social')),
 
@@ -58,18 +58,19 @@ urlpatterns = [
          auth_views.PasswordChangeDoneView.as_view(template_name='password_change_done.html'),
          name='password_change_done'),
 
-    path('boards/create/', views.board_create, name='board_create'),
-    path('boards/<int:pk>/update', views.board_update, name='board_update'),
-    path('boards/<int:pk>/delete', views.board_delete, name='board_delete'),
+    path('boards/create/<str:page>', views.board_create, name='board_create'),
+    path('boards/<int:pk>/<str:page>/update', views.board_update, name='board_update'),
+    path('boards/<int:pk>/<str:page>/delete', views.board_delete, name='board_delete'),
 
     path('boards/<int:pk>', views.TopicListView.as_view(), name='board_topics'),
 
     path('boards/<int:pk>/new/', views.new_topic, name='new_topic'),
-    path('boards/<int:pk>/new/basic-upload', views.BasicUploadView.as_view(), name='basic_upload'),
+
     path('boards/<int:pk>/to_pdf/', utils.to_pdf, name='to_pdf'),
     path('boards/<int:pk>/export_topics_csv/', utils.export_topics_csv, name='export_topics_csv'),
     path('email_send/', utils.test_send, name='test_send'),
     path('boards/<int:pk>/topics/<int:topic_pk>', views.PostListView.as_view(), name='topic_posts'),
+    path('boards/<int:pk>/topics/<int:topic_pk>/gallery', views.gallery_images, name='gallery_images'),
     path('boards/<int:pk>/topics/<int:topic_pk>/reply', views.reply_topic, name='reply_topic'),
     path('boards/<int:pk>/topics/<int:topic_pk>/post/<int:post_pk>/edit', views.PostUpdateView.as_view(),
          name='edit_post'),

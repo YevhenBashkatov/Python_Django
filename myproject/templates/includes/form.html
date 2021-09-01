@@ -1,4 +1,7 @@
-{% load form_tags widget_tweaks %}
+
+{% load form_tags %}
+{% load widget_tweaks %}
+
 
 
 
@@ -12,10 +15,10 @@
 
 {% for field in form %}
   <div class="form-group">
-    {{ field.label_tag }}
 
+      {% if field.html_name != 'categories' and field.html_name != 'interests' %}
+          {{ field.label_tag }}
     {% render_field field class=field|input_class %}
-
     {% for error in field.errors %}
       <div class="invalid-feedback">
         {{ error }}
@@ -26,6 +29,9 @@
         {{ field.help_text|safe }}
       </small>
     {% endif %}
+          {% else %}
+          {{ field.label_tag }}
+           {% render_field field class=field %}
+  {% endif %}
   </div>
-
-   {% endfor %}
+{% endfor %}

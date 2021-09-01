@@ -7,14 +7,126 @@
 {% endblock %}
 
 {% block content %}
+    {% include 'partials/messages.html' %}
   <div class="row">
     <div class="col-lg-6 col-md-8 col-sm-10">
-      <form method="post" novalidate>
+      <form method="post" enctype="multipart/form-data" id='account_form' novalidate>
         {% csrf_token %}
         {% include 'includes/form.html' %}
+        {% if not user.photo %}
+          <input type="hidden" name='x' id="id_x">
+          <input type="hidden" name='y' id="id_y">
+          <input type="hidden" name='width' id="id_width">
+          <input type="hidden" name='height' id="id_height">
+
+          <input type="file" id="id_file" name="photo" class="mt-3">
+
+        {% endif %}
+
         <button type="submit" class="btn btn-success">Save changes</button>
+
       </form>
     </div>
+    {% if user.photo %}
+    <div class='row'>
+      <div class="col-lg-6 col-md-8 col-sm-10">
+      <form action="delete-photo" method="POST">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Delete photo</button>
+      </form>
+      </div>
+    </div>
+    {% endif %}
   </div>
-    {% include 'partials/messages.html' %}
+  <div class="modal fade" id="modalCrop">
+    <div class="modal-dialog">
+      <div class="modal-content ">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title">Crop the photo</h4>
+        </div>
+        <div class="modal-body">
+          <img src="" id="image" style="width: 100%; height: auto" alt="">
+        </div>
+        <div class="modal-footer">
+          <div class="btn-group pull-left" role="group">
+            <button type="button" class="btn btn-default js-zoom-in">
+              <span class="glyphicon glyphicon-zoom-in"></span>
+            </button>
+            <button type="button" class="btn btn-default js-zoom-out">
+              <span class="glyphicon glyphicon-zoom-out"></span>
+            </button>
+          </div>
+            <div>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Nevermind</button>
+          <button type="button" class="btn btn-primary js-crop-and-upload">Crop and upload</button>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block javascript %}
+    {{ block.super }}
+  <script>
+    $(function () {
+
+      $("#id_file").change(function () {
+        if (this.files && this.files[0]) {
+          var reader = new FileReader();
+          reader.onload = function (e) {
+            $("#image").attr("src", e.target.result);
+            $("#modalCrop").modal("show");
+          }
+          reader.readAsDataURL(this.files[0]);
+        }
+      });
+
+      var $image = $("#image");
+      var cropBoxData;
+      var canvasData;
+
+      $("#modalCrop").on("shown.bs.modal", function () {
+        $image.cropper({
+          viewMode: 3,
+          aspectRatio: 1/1,
+          minCropBoxWidth: 200,
+          minCropBoxHeight: 200,
+
+          ready: function () {
+            $image.cropper("setCanvasData", {height: 100, width: 100});
+            $image.cropper("setCropBoxData", cropBoxData);
+
+
+          }
+        });
+      }).on("hidden.bs.modal", function () {
+        cropBoxData = $image.cropper("getCropBoxData");
+        canvasData = $image.cropper("getCanvasData");
+
+        $image.cropper("destroy");
+      });
+
+      $(".js-zoom-in").click(function () {
+        $image.cropper("zoom", 0.1);
+      });
+
+      $(".js-zoom-out").click(function () {
+        $image.cropper("zoom", -0.1);
+      });
+
+      $(".js-crop-and-upload").click(function () {
+        var cropData = $image.cropper("getData");
+        $("#id_x").val(cropData["x"]);
+        $("#id_y").val(cropData["y"]);
+        $("#id_height").val(cropData["height"]);
+        $("#id_width").val(cropData["width"]);
+        $('#account_form').submit();
+      });
+
+    });
+  </script>
 {% endblock %}

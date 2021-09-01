@@ -13,16 +13,17 @@
 
 {% block content %}
     <div class="row">
-    <div class="mb-4 m-2">
-    <a href="{% url 'new_topic' board.pk %}" class="btn btn-primary">New topic</a>
-  </div>
-<div class="mb-4 m-2 ">
-    <a href="{% url 'to_pdf' board.pk %}" class="btn btn-primary" role="button">To pdf</a>
-  </div>
-    <div class="mb-4 m-2 ">
-    <a href="{% url 'export_topics_csv' board.pk %}" class="btn btn-primary" role="button">Export csv</a>
-  </div>
+    <div>
+        <a href="{% url 'new_topic' board.pk %}" class="btn btn-primary ">New topic</a>
+
+        <a href="{% url 'to_pdf' board.pk %}" class="btn btn-primary float-end" role="button">Export PDF</a>
+
+        <a href="{% url 'export_topics_csv' board.pk %}" class="btn btn-primary float-end me-2" role="button">Export CSV</a>
     </div>
+    </div>
+
+
+
 
 
 

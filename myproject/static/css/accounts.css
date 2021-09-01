@@ -14,3 +14,9 @@ body {
 .logo a:active {
   text-decoration: none;
 }
+
+input#id_is_adult.form-control{
+  display: block;
+  float: left !important;
+  width: auto;
+}

@@ -1,7 +1,7 @@
-<form method="post" action="{% url 'board_update' form.instance.pk %}" class="js-board-update-form">
+<form method="post" action="{% url 'board_update' form.instance.pk page %}" class="js-board-update-form">
   {% csrf_token %}
   <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
       <span aria-hidden="true">&times;</span>
     </button>
     <h4 class="modal-title">Update board</h4>
@@ -10,8 +10,9 @@
     {% include 'partials/partial_board_form.html' %}
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
     <button type="submit" class="btn btn-primary">Update board</button>
   </div>
+
 
 </form>

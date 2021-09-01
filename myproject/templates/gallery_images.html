@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block breadcrumb %}
+  <li class="breadcrumb-item"><a href="{% url 'home' %}">Boards</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'board_topics' topic.board.pk %}">{{ topic.board.name }}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'topic_posts' topic.board.pk topic.pk %}">{{ topic.subject }}</a></li>
+  
+{% endblock %}
+{% block content %}
+<form  method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+  {% include 'includes/form.html' %}
+  <button type='submit' class='btn btn-success'>Add image</button>
+</form>
+
+<div class="d-flex flex-wrap justify-content-start">
+{% for photo in photos %}
+<div class="gallery-image-item m-2">
+  <img class="img-fluid img-thumbnail w-50" src="{{photo.photo.url}}" alt="">
+</div>
+{% endfor %}
+</div>
+{% endblock %}

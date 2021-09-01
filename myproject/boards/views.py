@@ -12,7 +12,7 @@ from django.urls import reverse, reverse_lazy
 from django.contrib import messages
 from django.views.generic.base import View
 
-from .models import Blogger, Reader, Photo
+from .models import Blogger, Reader, Photo, User
 
 from .tasks import send_signup_email
 
@@ -33,12 +33,19 @@ class BoardListView(ListView):
     context_object_name = 'boards'
     template_name = 'home.html'
     paginate_by = 5
-    history = model.history.all().order_by('-history_date')
+    history = model.history.all().order_by('-history_date')[:5]
+
+    # filter().order_by('-history_date')
 
     def get_context_data(self, **kwargs):
         kwargs['history'] = self.history
 
         return super().get_context_data(**kwargs)
+
+    def get_queryset(self):
+        self.boards = Board.objects.filter(is_active=True)
+        queryset = self.boards
+        return queryset
 
 
 class TopicListView(ListView):
@@ -69,7 +76,9 @@ class PostListView(ListView):
             self.topic.views += 1
             self.topic.save()
             self.request.session[session_key] = True
+
         kwargs['topic'] = self.topic
+        kwargs['photos'] = self.topic.photos.all()
         return super().get_context_data(**kwargs)
 
     def get_queryset(self):
@@ -89,7 +98,6 @@ def new_topic(request, pk):
             topic = form.save(commit=False)
             topic.board = board
             topic.starter = request.user
-
             topic.save()
             Post.objects.create(
                 message=form.cleaned_data.get('message'),
@@ -99,23 +107,23 @@ def new_topic(request, pk):
 
             return redirect('topic_posts', pk=pk, topic_pk=topic.pk)
     else:
-        # photos_list = Photo.objects.all().filter(pk=pk)
 
         form = NewTopicForm()
 
     return render(request, 'new_topic.html', {'board': board, 'form': form})
 
 
-class BasicUploadView(View):
-
-    def post(self, request, pk):
-        form = PhotoForm(self.request.POST, self.request.FILES)
-        if form.is_valid():
-            photo = form.save()
-            data = {'is_valid': True, 'id': photo.id, 'name': photo.file.name, 'url': photo.file.url}
-        else:
-            data = {'is_valid': False}
-        return JsonResponse(data)
+#
+# class BasicUploadView(View):
+#
+#     def post(self, request, pk):
+#         form = PhotoForm(self.request.POST, self.request.FILES)
+#         if form.is_valid():
+#             photo = form.save()
+#             data = {'is_valid': True, 'id': photo.id, 'name': photo.file.name, 'url': photo.file.url}
+#         else:
+#             data = {'is_valid': False}
+#         return JsonResponse(data)
 
 
 @login_required
@@ -200,11 +208,24 @@ class ReaderSignUpView(CreateView):
         return redirect('home')
 
 
-def save_board_form(request, form, template_name, data):
+def home(request):
+    board_list = Board.objects.filter(is_active=True)
+    page = request.GET.get('page', 1)
+    history = Board.history.all().order_by('-history_date')[:5]
+
+    paginator = Paginator(board_list, 5)
+    try:
+        boards = paginator.page(page)
+    except PageNotAnInteger:
+        boards = paginator.page(1)
+    except EmptyPage:
+        boards = paginator.page(paginator.num_pages)
+    return render(request, 'home.html', {'boards': boards, 'page': page, 'history': history})
+
+
+def save_board_form(request, form, template_name, data, page):
     data = data
     print(request)
-
-    page = request.GET.get('page', 1)
 
     if request.method == 'POST':
 
@@ -223,19 +244,22 @@ def save_board_form(request, form, template_name, data):
                 board = paginator.page(paginator.num_pages)
 
             data['html_home'] = render_to_string('partials/partial_board_list.html', {
-                'boards': board
+                'boards': board,
+                'paginator': paginator,
+                'page': page,
+                'user': request.user
             })
 
 
         else:
             data['form_is_valid'] = False
-    context = {'form': form, 'page_num': page}
+    context = {'form': form, 'page': page}
 
     data['html_form'] = render_to_string(template_name, context, request=request)
     return JsonResponse(data)
 
 
-def board_create(request):
+def board_create(request, page):
     data = dict()
     if request.method == 'POST':
         form = BoardForm(request.POST)
@@ -244,10 +268,10 @@ def board_create(request):
     my_message = messages.success(request, 'Board has been created!', extra_tags=None)
     data['html_messages'] = render_to_string('partials/messages.html', context={'message': my_message},
                                              request=request)
-    return save_board_form(request, form, 'partials/partial_board_create.html', data)
+    return save_board_form(request, form, 'partials/partial_board_create.html', data, page)
 
 
-def board_update(request, pk):
+def board_update(request, pk, page):
     data = dict()
     board = get_object_or_404(Board, pk=pk)
 
@@ -260,26 +284,49 @@ def board_update(request, pk):
     data['html_messages'] = render_to_string('partials/messages.html', context={'message': my_message},
                                              request=request)
 
-    return save_board_form(request, form, 'partials/partial_board_update.html', data)
+    return save_board_form(request, form, 'partials/partial_board_update.html', data, page)
 
 
-def board_delete(request, pk):
+def board_delete(request, pk, page):
     board = get_object_or_404(Board, pk=pk)
     data = dict()
     if request.method == 'POST':
         board.delete()
-        data['form_is_valid'] = True  # This is just to play along with the existing code
         boards = Board.objects.all()
+
+        paginator = Paginator(boards, 5)
+        board = paginator.page(page)
+        data['form_is_valid'] = True  # This is just to play along with the existing code
+
         data['html_home'] = render_to_string('partials/partial_board_list.html', {
-            'boards': boards
+            'boards': board,
+            'paginator': paginator,
+            'page': page,
+            'user': request.user
         })
     else:
-        context = {'board': board}
+        context = {'board': board, 'page': page}
         data['html_form'] = render_to_string('partials/partial_board_delete.html',
                                              context,
                                              request=request,
                                              )
-    my_message = messages.success(request, 'Board "{}" has been deleted!'.format(board.name), extra_tags=None)
+    my_message = messages.success(request, 'Board has been deleted!', extra_tags=None)
     data['html_messages'] = render_to_string('partials/messages.html', context={'message': my_message},
                                              request=request)
     return JsonResponse(data)
+
+
+def gallery_images(request, pk, topic_pk):
+    topic = Topic.objects.get(pk=topic_pk)
+    if request.method == 'POST':
+        form = PhotoForm(request.POST, request.FILES)
+        if form.is_valid():
+            photo = form.save(commit=False)
+            photo.topic = topic
+            photo.save()
+        else:
+            form = PhotoForm()
+    else:
+        form = PhotoForm()
+    photos = Photo.objects.filter(topic=topic).order_by()
+    return render(request, 'gallery_images.html', {'photos': photos, 'topic': topic, 'form': form})
